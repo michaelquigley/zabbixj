@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="Assembly" class="com.quigley.sugar.Assembly">
+		<property name="name"><value>ZabbixJ-1.0.0</value></property>
+		<property name="assemblers">
+			<list>
+				<ref bean="TemplateAssembler"/>
+				<ref bean="AntAssembler"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="ChangeMonitor" class="com.quigley.sugar.monitor.change.ChangeMonitor">
+		<property name="assembly"><ref bean="Assembly"/></property>
+		<property name="pool"><ref bean="ContinuousBuildPool"/></property>
+	</bean>
+</beans>
