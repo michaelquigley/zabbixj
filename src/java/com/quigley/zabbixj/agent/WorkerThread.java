@@ -75,6 +75,12 @@ public class WorkerThread extends Thread {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             String inputLine = in.readLine();
+            
+            // Fix for zabbix_get.
+            if(inputLine.substring(0, 4).equals("ZBXD")) {
+            	inputLine = inputLine.substring(13, inputLine.length());
+            }
+            
             if(inputLine != null) {
                 try {
                     Object value = container.getMetric(inputLine);
