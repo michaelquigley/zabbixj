@@ -50,8 +50,11 @@ public class ZabbixClient {
 				byte[] bytes = (key + "\n").getBytes();
 				output.write(bytes);
 				String inputLine = input.readLine();
-				
 				socket.close();
+
+				if(inputLine.substring(0, 4).equals("ZBXD")) {
+					inputLine = inputLine.substring(13, inputLine.length());
+				}
 				
 				try {
 					long inputLong = Long.parseLong(inputLine);
