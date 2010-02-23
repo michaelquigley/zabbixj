@@ -30,5 +30,6 @@ CLASSPATH=${CLASSPATH}:${ZABBIXJ_LIB}/slf4j-1.5.6/slf4j-api-1.5.6.jar
 CLASSPATH=${CLASSPATH}:${ZABBIXJ_LIB}/slf4j-1.5.6/slf4j-log4j12-1.5.6.jar
 CLASSPATH=${CLASSPATH}:${ZABBIXJ_LIB}/log4j-1.2.15/log4j-1.2.15.jar
 CLASSPATH=${CLASSPATH}:${ZABBIXJ_HOME}/src/deploy/
+CLASSPATH=${CLASSPATH}:${ZABBIXJ_HOME}/dist/
 
 java -cp ${CLASSPATH} com.quigley.zabbixj.example.ExampleServer $*
