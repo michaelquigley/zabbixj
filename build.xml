@@ -58,7 +58,7 @@
 			<fileset dir="lib/"/>
 		</copy>
 		<copy todir="build/kit/bin/">
-			<fileset dir="src/bin/"/>
+			<fileset dir="bin/"/>
 		</copy>
 		
 		<zip destfile="${build.outputRoot}/quigley-zabbixj-${project.version}.${build.revision}.zip">
