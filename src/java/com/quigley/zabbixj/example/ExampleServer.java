@@ -1,7 +1,4 @@
 /*
- * $Id: ExampleServer.java 832 2009-02-26 21:59:55Z michael $
- */
-/*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
  * Copyright (C) 2006 Michael F. Quigley Jr.
  *

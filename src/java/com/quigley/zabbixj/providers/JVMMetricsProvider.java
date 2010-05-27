@@ -1,7 +1,4 @@
 /*
- * $Id: JVMMetricsProvider.java 833 2009-02-26 22:07:20Z michael $
- */
-/*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
  * Copyright (C) 2006 Michael F. Quigley Jr.
  *
@@ -33,7 +30,6 @@ import com.quigley.zabbixj.metrics.MetricsProvider;
  * @author Michael Quigley
  */
 public class JVMMetricsProvider implements MetricsProvider {
-
     public Object getValue(MetricsKey mKey) throws MetricsException {
         if (mKey.getKey().equals("memory.free")) {
             Runtime rt = Runtime.getRuntime();
@@ -56,5 +52,4 @@ public class JVMMetricsProvider implements MetricsProvider {
 
         throw new MetricsException("Unknown Key: " + mKey.getKey());
     }
-
 }

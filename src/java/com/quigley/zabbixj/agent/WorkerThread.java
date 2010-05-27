@@ -1,7 +1,4 @@
 /*
- * $Id: WorkerThread.java 831 2009-02-26 20:15:49Z michael $
- */
-/*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
  * Copyright (C) 2006 Michael F. Quigley Jr.
  *

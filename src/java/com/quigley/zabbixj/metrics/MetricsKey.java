@@ -1,7 +1,4 @@
 /*
- * $Id: MetricsKey.java 827 2009-02-26 18:39:30Z michael $
- */
-/*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
  * Copyright (C) 2006 Michael F. Quigley Jr.
  *

@@ -1,7 +1,4 @@
 /*
- * $Id: MetricsException.java 827 2009-02-26 18:39:30Z michael $
- */
-/*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
  * Copyright (C) 2006 Michael F. Quigley Jr.
  *
@@ -20,6 +17,7 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301, USA.
  */
+
 package com.quigley.zabbixj.metrics;
 
 @SuppressWarnings("serial")

@@ -1,7 +1,4 @@
 /*
- * $Id$
- */
-/*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
  * Copyright (C) 2006-2009 Michael F. Quigley Jr.
  *

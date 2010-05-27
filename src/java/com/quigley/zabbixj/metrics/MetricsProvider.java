@@ -1,7 +1,4 @@
 /*
- * $Id: MetricsProvider.java 827 2009-02-26 18:39:30Z michael $
- */
-/*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
  * Copyright (C) 2006 Michael F. Quigley Jr.
  *
@@ -30,7 +27,6 @@ package com.quigley.zabbixj.metrics;
  * @author Michael Quigley
  */
 public interface MetricsProvider {
-
 	/**
 	 * @param mKey a MetricsKey instance describing the metric to retrieve.
 	 * @return the value of the key.
@@ -38,5 +34,4 @@ public interface MetricsProvider {
 	 *         for the specified key; typically when a key is not found.
 	 */
 	public Object getValue(MetricsKey mKey) throws MetricsException;
-
 }

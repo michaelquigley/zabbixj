@@ -1,7 +1,4 @@
 /*
- * $Id: MetricsContainer.java 848 2009-03-17 15:23:55Z michael $
- */
-/*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
  * Copyright (C) 2006 Michael F. Quigley Jr.
  *
@@ -31,10 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MetricsContainer {
-
-	/**
-	 * Construct a new MetricsContainer instance.
-	 */
 	public MetricsContainer() {
 		container = new HashMap<String, MetricsProvider>();
 	}
