@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<bean id="Assembly" class="com.quigley.sugar.Assembly">
-		<property name="name"><value>ZabbixJ-1.0.0</value></property>
+		<property name="name"><value>ZabbixJ-2.0.0</value></property>
 		<property name="assemblers">
 			<list>
 				<ref bean="TemplateAssembler"/>
