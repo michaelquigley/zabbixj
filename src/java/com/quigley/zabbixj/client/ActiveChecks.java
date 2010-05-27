@@ -1,15 +1,17 @@
 package com.quigley.zabbixj.client;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 
 public class ActiveChecks {
 	public static void main(String[] args) throws Exception {
-		Socket socket = new Socket("192.168.9.33", 10051);
+		Socket socket = new Socket("eleven", 10051);
 		InputStream input = socket.getInputStream();
 		OutputStream output = socket.getOutputStream();
 	
@@ -18,21 +20,22 @@ public class ActiveChecks {
 		fos.close();
 		
 		output.write(getRequest());
+		output.flush();
 
-		byte[] buffer = new byte[1024];
-		int read = 0;
-		while((read = input.read(buffer, 0, 1024)) != -1) {
-			System.out.write(buffer, 0, read);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+		String line;
+		while((line = reader.readLine()) != null) {
+			System.out.println(line);
 		}
 		
 		socket.close();
 	}
 	
 	private static byte[] getRequest() throws Exception {
-		String request = "{\n" +
-		 "	\"request\":\"active checks\",\n" +
-		 "	\"host\":\"Eleven\"\n" +
-		 "}\n";
+		String request = "{\r\n" +
+		 "	\"request\":\"active checks\",\r\n" +
+		 "	\"host\":\"Eleven\"\r\n" +
+		 "}";
 		byte[] requestBytes = request.getBytes();
 
 		String header = "ZBXD ";
@@ -46,7 +49,6 @@ public class ActiveChecks {
 		dos.close();
 		bos.close();
 		byte[] requestLengthBytes = bos.toByteArray();
-		System.out.println("requestLengthBytes: " + requestLengthBytes.length);
 
 		byte[] allBytes = new byte[headerBytes.length + requestLengthBytes.length + request.getBytes().length];
 
