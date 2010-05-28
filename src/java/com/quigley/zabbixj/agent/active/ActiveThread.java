@@ -41,23 +41,33 @@ public class ActiveThread extends Thread {
         }
 
         try {
-        	refresh();
+        	if(log.isDebugEnabled()) {
+        		log.debug("Starting initial refresh of active checks.");
+        	}
+        	
+        	requestActiveChecks();
+        	
+        	if(log.isDebugEnabled()) {
+        		log.debug("Initial refresh of active checks completed.");
+        	}
         	
         } catch(Exception e) {
-        	log.error("Unable to do get initial list of checks.", e);
+        	log.error("Initial refresh failed.", e);
         }
         
         while(running) {
         	try {
         		Thread.sleep(1000);
+        		
         	} catch(InterruptedException ie) {
-        		//
+        		return;
         	}
         	
         	long clock = System.currentTimeMillis() / 1000;
+        	
         	if((clock - lastRefresh) >= refreshInterval) {
         		try {
-        			refresh();
+        			requestActiveChecks();
         			
         		} catch(Exception e) {
         			log.error("Unable to refresh.", e);
@@ -78,7 +88,148 @@ public class ActiveThread extends Thread {
         }
 	}
 	
+	private void requestActiveChecks() throws Exception {
+		if(log.isDebugEnabled()) {
+			log.debug("Requesting a list of active checks from the server.");
+		}
+		
+		Socket socket = new Socket(serverAddress, serverPort);
+		InputStream input = socket.getInputStream();
+		OutputStream output = socket.getOutputStream();
+	
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		
+		JSONObject request = new JSONObject();
+		request.put("request", "active checks");
+		request.put("host", hostName);
+
+		byte[] buffer = getRequest(request);
+		
+		output.write(buffer);
+		output.flush();
+
+		buffer = new byte[10240];
+		int read = 0;
+		while((read = input.read(buffer, 0, 10240)) != -1) {
+			baos.write(buffer, 0, read);
+		}
+		
+		socket.close();
+		
+		JSONObject response = getResponse(baos.toByteArray());
+		if(response.getString("response").equals("success")) {
+			refreshFromActiveChecksResponse(response);
+			
+		} else {
+			log.warn("Server reported a failure when requesting active checks:" + response.getString("info"));
+		}
+		
+		lastRefresh = System.currentTimeMillis() / 1000;
+	}
+	
+	private void refreshFromActiveChecksResponse(JSONObject response) throws JSONException {
+		ActiveChecksResponseIndex index = getActiveChecksResponseIndex(response);
+		insertNewChecks(index);
+		pruneChangedChecks(index);
+		pruneUnusedDelays(index);
+	}
+	
+	private ActiveChecksResponseIndex getActiveChecksResponseIndex(JSONObject response) throws JSONException {
+		ActiveChecksResponseIndex index = new ActiveChecksResponseIndex();
+		
+		JSONArray data = response.getJSONArray("data");
+		for(int i = 0; i < data.length(); i++) {
+			JSONObject check = data.getJSONObject(i);
+			String key = check.getString("key");
+			int delay = check.getInt("delay");
+			index.add(key, delay);
+		}
+		
+		return index;
+	}
+
+	private void insertNewChecks(ActiveChecksResponseIndex index) {
+		long clock = System.currentTimeMillis() / 1000;
+		
+		for(String key : index.getIndex().keySet()) {
+			int delay = index.getIndex().get(key);
+			if(!checks.containsKey(delay)) {
+				if(log.isDebugEnabled()) {
+					log.debug("Inserting new check list for delay '" + delay + "'.");
+				}
+				checks.put(delay, new ArrayList<String>());
+			}
+			List<String> keysForDelay = checks.get(delay);
+			if(!keysForDelay.contains(key)) {
+				if(log.isDebugEnabled()) {
+					log.debug("Adding new key '" + key + "' to check list for delay '" + delay + "'.");
+				}
+				keysForDelay.add(key);
+			}
+			if(!lastChecked.containsKey(delay)) {
+				lastChecked.put(delay, clock);
+			}
+		}
+	}
+	
+	private void pruneChangedChecks(ActiveChecksResponseIndex index) {
+		for(int delay : index.getDelays()) {
+			List<String> keysForDelay = checks.get(delay);
+			for(String key : new ArrayList<String>(keysForDelay)) {
+				if(index.getIndex().containsKey(key)) {
+					int currentDelay = index.getIndex().get(key);
+					if(currentDelay != delay) {
+						if(log.isDebugEnabled()) {
+							log.debug("Removing '" + key + "' from delay '" + delay + "' list.");
+						}
+	
+						keysForDelay.remove(key);
+					}
+				} else {
+					if(log.isDebugEnabled()) {
+						log.debug("Removing '" + key + "' from delay '" + delay + "' list.");
+					}
+
+					keysForDelay.remove(key);
+				}
+			}
+			checks.put(delay, keysForDelay);
+		}
+	}
+	
+	private void pruneUnusedDelays(ActiveChecksResponseIndex index) {
+		for(int delay : new ArrayList<Integer>(lastChecked.keySet())) {
+			if(!index.getDelays().contains(delay)) {
+				if(log.isDebugEnabled()) {
+					log.debug("Removing unused delay '" + delay + "' from last checked list.");
+				}
+				
+				lastChecked.remove(delay);
+			}
+		}
+		for(int delay : new ArrayList<Integer>(checks.keySet())) {
+			if(!index.getDelays().contains(delay)) {
+				if(log.isDebugEnabled()) {
+					log.debug("Removing unused delay '" + delay + "' from checks.");
+				}
+
+				checks.remove(delay);
+			}
+		}
+	}
+	
 	private void sendMetrics(int delay, List<String> keyList) throws Exception {
+		if(log.isDebugEnabled()) {
+			String message = "Sending metrics for delay '" + delay + "' with keys: ";
+			for(int i = 0; i < keyList.size(); i++) {
+				if(i > 0) {
+					message += ", ";
+				}
+				message += keyList.get(i);
+			}
+			log.debug(message);
+		}
+		
 		long clock = System.currentTimeMillis() / 1000;
 		
 		JSONObject metrics = new JSONObject();
@@ -122,89 +273,14 @@ public class ActiveThread extends Thread {
 		
 		JSONObject response = getResponse(baos.toByteArray());
 		if(response.getString("response").equals("success")) {
-			log.info("Success. Server reports: " + response.getString("info"));
+			if(log.isDebugEnabled()) {
+				log.debug("The server reported success '" + response.getString("info") + "'.");
+			}
 		} else {
 			log.error("Failure!");
 		}
 		
 		lastChecked.put(delay, clock);
-	}
-	
-	private void refresh() throws Exception {
-		Socket socket = new Socket(serverAddress, serverPort);
-		InputStream input = socket.getInputStream();
-		OutputStream output = socket.getOutputStream();
-	
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
-		JSONObject request = new JSONObject();
-		request.put("request", "active checks");
-		request.put("host", hostName);
-
-		byte[] buffer = getRequest(request);
-		
-		output.write(buffer);
-		output.flush();
-
-		buffer = new byte[10240];
-		int read = 0;
-		while((read = input.read(buffer, 0, 10240)) != -1) {
-			baos.write(buffer, 0, read);
-		}
-		
-		socket.close();
-		
-		JSONObject response = getResponse(baos.toByteArray());
-		if(response.getString("response").equals("success")) {
-			refreshFromResponse(response);
-			
-		} else {
-			log.warn("Server reported a failure when requesting active checks:" + response.getString("info"));
-		}
-		
-		lastRefresh = System.currentTimeMillis() / 1000;
-	}
-	
-	private void refreshFromResponse(JSONObject response) throws JSONException {
-		long clock = System.currentTimeMillis() / 1000;
-		
-		Map<Integer, List<String>> newChecks = new HashMap<Integer, List<String>>();
-		
-		JSONArray data = response.getJSONArray("data");
-		for(int i = 0; i < data.length(); i++) {
-			JSONObject check = data.getJSONObject(i);
-			String key = check.getString("key");
-			int delay = check.getInt("delay");
-			
-			if(!newChecks.containsKey(delay)) {
-				newChecks.put(delay, new ArrayList<String>());
-			}
-			if(!lastChecked.containsKey(delay)) {
-				lastChecked.put(delay, clock);
-			}
-			List<String> checksForDelay = newChecks.get(delay);
-			if(!checksForDelay.contains(key)) {
-				checksForDelay.add(key);
-				newChecks.put(delay, checksForDelay);
-				
-				if(log.isDebugEnabled()) {
-					log.debug("Added '" + key + "' on " + delay + " second delay cycle.");
-				}
-			}
-		}
-		
-		List<Integer> lastCheckedToRemove = new ArrayList<Integer>();
-		for(int delay : lastChecked.keySet()) {
-			if(!newChecks.containsKey(delay)) {
-				lastCheckedToRemove.add(delay);
-			}
-		}
-		for(int delay : lastCheckedToRemove) {
-			log.debug("Pruning lastChecked delay '" + delay + "'");
-			lastChecked.remove(delay);
-		}
-		
-		checks = newChecks;
 	}
 	
 	private byte[] getRequest(JSONObject jsonObject) throws Exception {
@@ -278,6 +354,30 @@ public class ActiveThread extends Thread {
 	private InetAddress serverAddress;
 	private int serverPort;
 	private int refreshInterval;
+	
+	private class ActiveChecksResponseIndex {
+		public ActiveChecksResponseIndex() {
+			index = new HashMap<String, Integer>();
+			delays = new ArrayList<Integer>();
+		}
+		
+		public Map<String, Integer> getIndex() {
+			return index;
+		}
+		public List<Integer> getDelays() {
+			return delays;
+		}
+
+		public void add(String key, int delay) {
+			index.put(key, delay);
+			if(!delays.contains(delay)) {
+				delays.add(delay);
+			}
+		}
+
+		private Map<String, Integer> index;
+		private List<Integer> delays;
+	}
 	
 	private static Logger log = LoggerFactory.getLogger(ActiveThread.class);
 }
