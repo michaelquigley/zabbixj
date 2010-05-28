@@ -20,6 +20,8 @@
 
 package com.quigley.zabbixj.agent;
 
+import com.quigley.zabbixj.agent.active.ActiveThread;
+import com.quigley.zabbixj.agent.passive.ListenerThread;
 import com.quigley.zabbixj.metrics.MetricsContainer;
 import com.quigley.zabbixj.metrics.MetricsProvider;
 
@@ -45,11 +47,36 @@ public class ZabbixAgent {
      */
     public ZabbixAgent() throws Exception {
         metricsContainer = new MetricsContainer();
+        
+        enablePassive = true;
         listenPort = 10050;
         listenAddress = null;
+        
+        enableActive = false;
+        serverAddress = null;
+        serverPort = 10051;
+        refreshInterval = 120;
     }
 
     /**
+     * Return the value of property <code>enablePassive</code>.
+     * @return the current value of property enablePassive.
+     */
+    public boolean isEnablePassive() {
+		return enablePassive;
+	}
+
+    /**
+     * Set the value of property <code>enablePassive</code>.
+     * @param enablePassive Set to <code>true</code> if the agent should start a listener
+     * 		  for passive checks. Set to <code>false</code> if the agent should omit the
+     * 		  passive listener. 
+     */
+	public void setEnablePassive(boolean enablePassive) {
+		this.enablePassive = enablePassive;
+	}
+
+	/**
      * Return the value of property listenAddress.
      * @return the current value of listenAddress. Returns null if the property is unset.
      */
@@ -85,8 +112,85 @@ public class ZabbixAgent {
     public void setListenPort(int listenPort) {
         this.listenPort = listenPort;
     }
-
+    
     /**
+     * Return the value of property <code>enableActive</code>.
+     * @return the current value of <code>enableActive</code>. Defaults to <code>false</code>.
+     */
+    public boolean isEnableActive() {
+		return enableActive;
+	}
+    
+    /**
+     * Set the value of property <code>enableActive</code>.
+     * @param enableActive Set to <code>true</code> when an active check configuration is
+     * 		  desired, <code>false</code> otherwise.
+     */
+	public void setEnableActive(boolean enableActive) {
+		this.enableActive = enableActive;
+	}
+
+	/**
+	 * Return the value of property <code>hostName</code>.
+	 * @return the current value of <code>hostName</code>.
+	 */
+	public String getHostName() {
+		return hostName;
+	}
+
+	/**
+	 * Set the value of property <code>hostName</code>.
+	 * @param hostName the name of this host, as configured in Zabbix.
+	 */
+	public void setHostName(String hostName) {
+		this.hostName = hostName;
+	}
+
+	/**
+	 * Return the value of property <code>serverAddress</code>.
+	 * @return the current value of <code>serverAddress</code>.
+	 */
+	public InetAddress getServerAddress() {
+		return serverAddress;
+	}
+	
+	/**
+	 * Set the value of property <code>serverAddress</code>.
+	 * @param serverAddress the IP address for the Zabbix server listening for active checks.
+	 */
+	public void setServerAddress(InetAddress serverAddress) {
+		this.serverAddress = serverAddress;
+	}
+
+	/**
+	 * Return the value of property <code>serverPort</code>.
+	 * @return the current value of the <code>serverPort</code> property.
+	 */
+	public int getServerPort() {
+		return serverPort;
+	}
+	
+	/**
+	 * Set the value of property <code>serverPort</code>.
+	 * @param serverPort the TCP port for the Zabbix server listening for active checks. Defaults to
+	 * 		  <code>10051</code>.
+	 */
+	public void setServerPort(int serverPort) {
+		this.serverPort = serverPort;
+	}
+	
+	/**
+	 * Return the value of property <code>refreshInterval</code>.
+	 * @return the current value of the <code>refreshInterval</code> property. Defaults to <code>120</code>.
+	 */
+	public int getRefreshInterval() {
+		return refreshInterval;
+	}
+	public void setRefreshInterval(int refreshInterval) {
+		this.refreshInterval = refreshInterval;
+	}
+
+	/**
      * Add a MetricsProvider to the agent.
      * @param name bind the provider to this name.
      * @param provider the provider instance.
@@ -107,14 +211,20 @@ public class ZabbixAgent {
             log.info("Zabbix Agent Starting");
         }
 
-        // Create and start the listener.
-        if(listenAddress == null) {
-            listenerThread = new ListenerThread(metricsContainer, listenPort);
-        } else {
-            listenerThread = new ListenerThread(metricsContainer, listenAddress, listenPort);
+        if(enablePassive) {
+	        if(listenAddress == null) {
+	            listenerThread = new ListenerThread(metricsContainer, listenPort);
+	        } else {
+	            listenerThread = new ListenerThread(metricsContainer, listenAddress, listenPort);
+	        }
+	        listenerThread.start();
         }
-        listenerThread.start();
 
+        if(enableActive) {
+        	activeThread = new ActiveThread(metricsContainer, hostName, serverAddress, serverPort, refreshInterval);
+        	activeThread.start();
+        }
+        
         if(log.isInfoEnabled()) {
             log.info("Zabbix Agent Started");
         }
@@ -142,11 +252,19 @@ public class ZabbixAgent {
         }
     }
 
+    private boolean enablePassive;
     private InetAddress listenAddress;
     private int listenPort;
+    
+    private boolean enableActive;
+    private String hostName;
+    private InetAddress serverAddress;
+    private int serverPort;
+    private int refreshInterval;
 
     private MetricsContainer metricsContainer;
     private ListenerThread listenerThread;
+    private ActiveThread activeThread;
 
     private static Logger log = LoggerFactory.getLogger(ZabbixAgent.class);
 }

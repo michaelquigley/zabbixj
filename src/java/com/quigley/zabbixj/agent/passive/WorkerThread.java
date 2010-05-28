@@ -18,7 +18,7 @@
  * Boston, MA  02110-1301, USA.
  */
 
-package com.quigley.zabbixj.agent;
+package com.quigley.zabbixj.agent.passive;
 
 import com.quigley.zabbixj.metrics.MetricsContainer;
 import com.quigley.zabbixj.metrics.MetricsException;
