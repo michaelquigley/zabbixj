@@ -8,7 +8,7 @@
 		<property name="assemblers">
 			<list>
 				<ref bean="TemplateAssembler"/>
-				<ref bean="AntAssembler"/>
+				<ref bean="AntAssemblerSugarBuildXml"/>
 			</list>
 		</property>
 	</bean>

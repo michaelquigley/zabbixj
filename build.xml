@@ -18,7 +18,7 @@
  * Boston, MA  02110-1301, USA.
 -->
 <project name="zabbixj" default="world">
-	<property name="project.version" value="2.0.0"/>
+	<property name="version" value="2.0.0"/>
 	
     <path id="compile.path">
     	<fileset dir="lib/slf4j-1.6.0/"/>
@@ -35,7 +35,7 @@
 
     <target name="package" depends="compile">
         <mkdir dir="build/dist/"/>
-        <jar destfile="build/dist/quigley-${ant.project.name}-${project.version}.jar">
+        <jar destfile="build/dist/quigley-zabbixj-${version}.jar">
             <fileset dir="build/classes/"/>
         </jar>
     </target>
@@ -43,27 +43,4 @@
     <target name="clean">
         <delete dir="build/"/>
     </target>
-	
-	<target name="sugar" depends="world">
-		<fail unless="build.outputRoot"/>
-		<fail unless="build.revision"/>
-		
-		<mkdir dir="build/kit/"/>
-		<copy todir="build/kit/dist/">
-			<fileset dir="build/dist/"/>
-			<fileset dir="src/java/">
-				<include name="log4j.properties"/>
-			</fileset>
-		</copy>
-		<copy todir="build/kit/lib/">
-			<fileset dir="lib/"/>
-		</copy>
-		<copy todir="build/kit/bin/">
-			<fileset dir="bin/"/>
-		</copy>
-		
-		<zip destfile="${build.outputRoot}/quigley-${ant.project.name}-${project.version}.${build.revision}.zip">
-			<fileset dir="build/kit/" />
-		</zip>
-	</target>	
 </project>
