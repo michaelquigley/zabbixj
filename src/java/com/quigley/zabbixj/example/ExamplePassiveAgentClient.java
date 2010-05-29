@@ -1,6 +1,6 @@
 /*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
- * Copyright (C) 2006-2009 Michael F. Quigley Jr.
+ * Copyright (C) 2006-2010 Michael F. Quigley Jr.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,12 +26,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.quigley.zabbixj.client.ZabbixClient;
+import com.quigley.zabbixj.client.PassiveAgentClient;
 
-public class ExampleClient {
+/**
+ * An example using <code>PassiveAgentClient</code> to retrieve values from a passive
+ * Zabbix agent. This is very similar to the Zabbix-provided <code>zabbix_get</code>
+ * utility. We include the ability to query multiple keys, repeatedly, with a
+ * configurable polling delay.
+ * 
+ * @author Michael Quigley
+ */
+public class ExamplePassiveAgentClient {
 	public static void main(String[] args) throws Exception {
 		if(args.length < 3) {
-			System.out.println("exampleClient <address> <port> [-d<sec>] <key> ... <keyN>");
+			System.out.println("Usage: examplePassiveAgentClient <address> <port> [-d<sec>] <key> ... <keyN>");
 			System.exit(1);
 		}
 		
@@ -47,7 +55,7 @@ public class ExampleClient {
 			System.out.println("Retrieving information every " + delay + " seconds.");
 		}
 		
-		ZabbixClient zabbixClient = new ZabbixClient(agentAddress, port);
+		PassiveAgentClient zabbixClient = new PassiveAgentClient(agentAddress, port);
 		
 		List<String> keys = new ArrayList<String>();
 		for(int i = firstKeyIndex; i < args.length; i++) {

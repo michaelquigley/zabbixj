@@ -1,6 +1,6 @@
 /*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
- * Copyright (C) 2006 Michael F. Quigley Jr.
+ * Copyright (C) 2006-2010 Michael F. Quigley Jr.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,8 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ZabbixClient {
-	public ZabbixClient(InetAddress agentAddress, int port) {
+import com.quigley.zabbixj.ZabbixException;
+
+public class PassiveAgentClient {
+	public PassiveAgentClient(InetAddress agentAddress, int port) {
 		this.agentAddress = agentAddress;
 		this.port = port;
 	}

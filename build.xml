@@ -1,7 +1,6 @@
-<!-- $Id: build.xml 831 2009-02-26 20:15:49Z michael $ -->
 <!--
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
- * Copyright (C) 2006 Michael F. Quigley Jr.
+ * Copyright (C) 2006-2010 Michael F. Quigley Jr.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,21 +21,21 @@
 	<property name="project.version" value="2.0.0"/>
 	
     <path id="compile.path">
-    	<fileset dir="lib/slf4j-1.5.6/"/>
+    	<fileset dir="lib/slf4j-1.6.0/"/>
     </path>
 
     <target name="world" depends="package"/>
 
     <target name="compile">
         <mkdir dir="build/classes/"/>
-        <javac srcdir="src/" destdir="build/classes/" debug="true">
+        <javac srcdir="src/" destdir="build/classes/" debug="true" includeantruntime="false">
             <classpath refid="compile.path"/>
         </javac>
     </target>
 
     <target name="package" depends="compile">
         <mkdir dir="build/dist/"/>
-        <jar destfile="build/dist/quigley-zabbixj-${project.version}.jar">
+        <jar destfile="build/dist/quigley-${ant.project.name}-${project.version}.jar">
             <fileset dir="build/classes/"/>
         </jar>
     </target>
@@ -52,7 +51,9 @@
 		<mkdir dir="build/kit/"/>
 		<copy todir="build/kit/dist/">
 			<fileset dir="build/dist/"/>
-			<fileset dir="src/deploy/"/>
+			<fileset dir="src/java/">
+				<include name="log4j.properties"/>
+			</fileset>
 		</copy>
 		<copy todir="build/kit/lib/">
 			<fileset dir="lib/"/>
@@ -61,7 +62,7 @@
 			<fileset dir="bin/"/>
 		</copy>
 		
-		<zip destfile="${build.outputRoot}/quigley-zabbixj-${project.version}.${build.revision}.zip">
+		<zip destfile="${build.outputRoot}/quigley-${ant.project.name}-${project.version}.${build.revision}.zip">
 			<fileset dir="build/kit/" />
 		</zip>
 	</target>	

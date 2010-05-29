@@ -1,6 +1,6 @@
 /*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
- * Copyright (C) 2006 Michael F. Quigley Jr.
+ * Copyright (C) 2006-2010 Michael F. Quigley Jr.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,33 +24,30 @@ import com.quigley.zabbixj.agent.ZabbixAgent;
 import com.quigley.zabbixj.providers.JVMMetricsProvider;
 
 /**
- * A simple ZabbixAgent example.
+ * A simple passive Zabbix agent implementation.
  * 
  * @author Michael Quigley
  */
-public class ExampleServer {
+public class ExamplePassiveAgent {
 
 	public static void main(String[] args) throws Exception {
 		if(args.length < 1) {
-			System.out.println("Usage: com.quigley.zabbixj.example.ExampleServer <port>");	
+			System.out.println("Usage: examplePassiveAgent <listenPort>");	
 			return;
 		}
+
+		int listenPort = Integer.parseInt(args[0]);
 		
-		// Start the ZabbixAgent.
-		agent = new ZabbixAgent();
-        agent.setListenPort(Integer.parseInt(args[0]));
+		ZabbixAgent agent = new ZabbixAgent();
+        agent.setListenPort(listenPort);
 
         agent.addProvider("example", new ExampleMetricsProvider());
 		agent.addProvider("java", new JVMMetricsProvider());
         
         agent.start();
-
-        // Your meaningful business logic would go here.
-        try { while(true) { Thread.sleep(100000); } } catch(Exception e) { }
-
-        // Stop the ZabbixAgent.
-        agent.stop();
+        
+        while(true) {
+        	Thread.sleep(10000);
+        }
     }
-	
-	private static ZabbixAgent agent;
 }

@@ -1,6 +1,6 @@
 /*
  * Zabbix/J - A Java agent for the Zabbix monitoring system.
- * Copyright (C) 2006-2009 Michael F. Quigley Jr.
+ * Copyright (C) 2006-2010 Michael F. Quigley Jr.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,7 +18,7 @@
  * Boston, MA  02110-1301, USA.
  */
 
-package com.quigley.zabbixj.client;
+package com.quigley.zabbixj;
 
 @SuppressWarnings("serial")
 public class ZabbixException extends RuntimeException {
