@@ -33,14 +33,6 @@
 				<exclude name="doc/*"/>
 			</fileset>
 		</copy>
-		<copy todir="${distProduct}/dist/">
-			<fileset dir="build/dist/">
-				<include name="*.jar"/>
-			</fileset>
-			<fileset dir="src/java/">
-				<include name="log4j.properties"/>
-			</fileset>
-		</copy>
 		<copy todir="${distProduct}/lib/">
 			<fileset dir="lib/"/>
 		</copy>
@@ -48,6 +40,9 @@
 			<fileset dir="bin/"/>
 		</copy>
 		<copy todir="${distProduct}">
+			<fileset dir="build/dist/">
+				<include name="*.jar"/>
+			</fileset>
 			<fileset dir=".">
 				<include name="build.xml"/>
 				<include name="LICENSE"/>

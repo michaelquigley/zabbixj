@@ -25,7 +25,7 @@ fi
 ZABBIXJ_LIB="${ZABBIXJ_HOME}/lib"
 
 CLASSPATH=${ZABBIXJ_HOME}/build/dist/quigley-zabbixj-2.0.0.jar
-CLASSPATH=${CLASSPATH}:${ZABBIXJ_HOME}/dist/quigley-zabbixj-2.0.0.jar
+CLASSPATH=${CLASSPATH}:${ZABBIXJ_HOME}/quigley-zabbixj-2.0.0.jar
 CLASSPATH=${CLASSPATH}:${ZABBIXJ_LIB}/slf4j-1.6.0/slf4j-api-1.6.0.jar
 CLASSPATH=${CLASSPATH}:${ZABBIXJ_LIB}/slf4j-1.6.0/slf4j-log4j12-1.6.0.jar
 CLASSPATH=${CLASSPATH}:${ZABBIXJ_LIB}/log4j-1.2.15/log4j-1.2.15.jar

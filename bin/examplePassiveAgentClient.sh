@@ -25,6 +25,6 @@ fi
 ZABBIXJ_LIB="${ZABBIXJ_HOME}/lib"
 
 CLASSPATH=${ZABBIXJ_HOME}/build/dist/quigley-zabbixj-2.0.0.jar
-CLASSPATH=${ZABBIXJ_HOME}/dist/quigley-zabbixj-2.0.0.jar:${CLASSPATH}
+CLASSPATH=${ZABBIXJ_HOME}/quigley-zabbixj-2.0.0.jar:${CLASSPATH}
 
 java -cp ${CLASSPATH} com.quigley.zabbixj.example.ExamplePassiveAgentClient $*
