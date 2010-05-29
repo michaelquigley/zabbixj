@@ -39,6 +39,11 @@
 		<copy todir="${distProduct}/bin/">
 			<fileset dir="bin/"/>
 		</copy>
+		<copy todir="${distProduct}/doc/">
+			<fileset dir="src/doc/">
+				<include name="developer-guide.html"/>
+			</fileset>
+		</copy>
 		<copy todir="${distProduct}">
 			<fileset dir="build/dist/">
 				<include name="*.jar"/>
