@@ -11,7 +11,8 @@
     <chapter>
         <title>Introduction</title>
         <para>
-            This is an introduction to Zabbix/J, a Zabbix agent framework for Java applications.
+            This is an introduction to Zabbix/J, a Zabbix agent framework for Java applications. We'll assume that
+            you're already familiar with Zabbix, its purpose, and how it can be integrated into your IT infrastructure.
         </para>
     </chapter>
     <chapter>

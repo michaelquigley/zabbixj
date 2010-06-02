@@ -57,6 +57,100 @@ public class ZabbixAgent {
         serverPort = 10051;
         refreshInterval = 120;
     }
+    
+    /**
+     * Start processing requests. Starts the passive listener (if enabled) and the
+     * active agent (if enabled).
+     */
+    public void start() throws Exception {
+        if(log.isInfoEnabled()) {
+            log.info("Starting Zabbix agent.");
+        }
+
+        if(enablePassive) {
+        	if(log.isInfoEnabled()) {
+        		log.info("Starting passive listener.");
+        	}
+        	
+	        if(listenAddress == null) {
+	            listenerThread = new ListenerThread(metricsContainer, listenPort);
+	        } else {
+	            listenerThread = new ListenerThread(metricsContainer, listenAddress, listenPort);
+	        }
+	        listenerThread.start();
+	        
+	        if(log.isInfoEnabled()) {
+	        	log.info("Passive listener started.");
+	        }
+        }
+
+        if(enableActive) {
+        	if(log.isInfoEnabled()) {
+        		log.info("Starting active agent.");
+        	}
+        	
+        	activeThread = new ActiveThread(metricsContainer, hostName, serverAddress, serverPort, refreshInterval);
+        	activeThread.start();
+        	
+        	if(log.isInfoEnabled()) {
+        		log.info("Active agent started.");
+        	}
+        }
+        
+        if(log.isInfoEnabled()) {
+            log.info("Zabbix agent started.");
+        }
+    }
+
+    /**
+     * Stop processing requests. Stops any passive or active components started in the <code>start</code>
+     * method.
+     */
+    public void stop() {
+        if(log.isInfoEnabled()) {
+            log.info("Stopping Zabbix agent.");
+        }
+
+        if(enablePassive) {
+        	if(log.isInfoEnabled()) {
+        		log.info("Stopping passive listener.");
+        	}
+        	
+	        listenerThread.shutdown();
+	        try {
+	            listenerThread.join();
+	
+	        } catch(InterruptedException ie) {
+	            //
+	        }
+	        
+	        if(log.isInfoEnabled()) {
+	        	log.info("Passive listener stopped.");
+	        }
+        }
+        
+        if(enableActive) {
+        	if(log.isInfoEnabled()) {
+        		log.info("Stopping active agent.");
+        	}
+        	
+        	activeThread.shutdown();
+        	try {
+        		activeThread.join();
+        		
+        	} catch(InterruptedException ie) {
+        		//
+        	}
+        	
+        	if(log.isInfoEnabled()) {
+        		log.info("Active agent stopped.");
+        	}
+        }
+
+        if(log.isInfoEnabled()) {
+            log.info("Zabbix agent stopped.");
+        }
+    }
 
     /**
      * Return the value of property <code>enablePassive</code>.
@@ -202,56 +296,7 @@ public class ZabbixAgent {
     public void setProviders(Map<String, MetricsProvider> providers) {
     	metricsContainer.addProviders(providers);
     }
-
-    /**
-     * Start processing requests.
-     */
-    public void start() throws Exception {
-        if(log.isInfoEnabled()) {
-            log.info("Zabbix Agent Starting");
-        }
-
-        if(enablePassive) {
-	        if(listenAddress == null) {
-	            listenerThread = new ListenerThread(metricsContainer, listenPort);
-	        } else {
-	            listenerThread = new ListenerThread(metricsContainer, listenAddress, listenPort);
-	        }
-	        listenerThread.start();
-        }
-
-        if(enableActive) {
-        	activeThread = new ActiveThread(metricsContainer, hostName, serverAddress, serverPort, refreshInterval);
-        	activeThread.start();
-        }
-        
-        if(log.isInfoEnabled()) {
-            log.info("Zabbix Agent Started");
-        }
-    }
-
-    /**
-     * Stop processing requests.
-     */
-    public void stop() {
-        if(log.isInfoEnabled()) {
-            log.info("Zabbix Agent Stopping");
-        }
-
-        // Stop and join with the listener.
-        listenerThread.shutdown();
-        try {
-            listenerThread.join();
-
-        } catch(InterruptedException ie) {
-            //
-        }
-
-        if(log.isInfoEnabled()) {
-            log.info("Zabbix Agent Stopped");
-        }
-    }
-
+    
     private boolean enablePassive;
     private InetAddress listenAddress;
     private int listenPort;
