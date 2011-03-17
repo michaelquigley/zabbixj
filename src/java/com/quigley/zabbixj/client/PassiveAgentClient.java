@@ -51,7 +51,7 @@ public class PassiveAgentClient {
 				String inputLine = input.readLine();
 				socket.close();
 
-				if(inputLine.substring(0, 4).equals("ZBXD")) {
+				if(inputLine.length() >= 4 && inputLine.substring(0, 4).equals("ZBXD")) {
 					inputLine = inputLine.substring(13, inputLine.length());
 				}
 				
