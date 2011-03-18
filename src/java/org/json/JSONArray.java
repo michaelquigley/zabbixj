@@ -80,20 +80,20 @@ import java.util.Map;
  * @author JSON.org
  * @version 2009-04-14
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class JSONArray {
 
 
     /**
      * The arrayList where the JSONArray's properties are kept.
      */
-    private ArrayList myArrayList;
+	private ArrayList myArrayList;
 
 
     /**
      * Construct an empty JSONArray.
      */
-    public JSONArray() {
+	public JSONArray() {
         this.myArrayList = new ArrayList();
     }
 
