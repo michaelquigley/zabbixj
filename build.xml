@@ -18,7 +18,7 @@
  * Boston, MA  02110-1301, USA.
 -->
 <project name="zabbixj" default="world">
-	<property name="version" value="2.0.0"/>
+    <property name="version" value="2.0.0"/>
 	
     <path id="compile.path">
     	<fileset dir="lib/slf4j-1.6.0/"/>

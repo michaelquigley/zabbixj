@@ -13,9 +13,4 @@
 			</list>
 		</property>
 	</bean>
-	
-	<bean id="ChangeMonitor" class="com.quigley.sugar.monitor.change.ChangeMonitor">
-		<property name="assembly"><ref bean="Assembly"/></property>
-		<property name="pool"><ref bean="ContinuousBuildPool"/></property>
-	</bean>
 </beans>
