@@ -18,7 +18,7 @@
  * Boston, MA  02110-1301, USA.
  */
 
-package com.quigley.zabbixj.example;
+package com.quigley.zabbixj.examples;
 
 import com.quigley.zabbixj.metrics.MetricsException;
 import com.quigley.zabbixj.metrics.MetricsKey;

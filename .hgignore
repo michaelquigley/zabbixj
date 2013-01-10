@@ -1,2 +1,3 @@
-.eclipse-build
-build
+target
+.classpath
+.project

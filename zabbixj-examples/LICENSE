@@ -17,37 +17,3 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301, USA.
  */
-
-package com.quigley.zabbixj.example;
-
-import com.quigley.zabbixj.agent.ZabbixAgent;
-import com.quigley.zabbixj.providers.JVMMetricsProvider;
-
-/**
- * A simple passive Zabbix agent implementation.
- * 
- * @author Michael Quigley
- */
-public class ExamplePassiveAgent {
-
-	public static void main(String[] args) throws Exception {
-		if(args.length < 1) {
-			System.out.println("Usage: examplePassiveAgent <listenPort>");	
-			return;
-		}
-
-		int listenPort = Integer.parseInt(args[0]);
-		
-		ZabbixAgent agent = new ZabbixAgent();
-        agent.setListenPort(listenPort);
-
-        agent.addProvider("example", new ExampleMetricsProvider());
-		agent.addProvider("java", new JVMMetricsProvider());
-        
-        agent.start();
-        
-        while(true) {
-        	Thread.sleep(10000);
-        }
-    }
-}

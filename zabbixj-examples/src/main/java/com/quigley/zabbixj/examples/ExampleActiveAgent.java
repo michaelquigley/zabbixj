@@ -18,7 +18,7 @@
  * Boston, MA  02110-1301, USA.
  */
 
-package com.quigley.zabbixj.example;
+package com.quigley.zabbixj.examples;
 
 import java.net.InetAddress;
 
@@ -33,7 +33,7 @@ import com.quigley.zabbixj.providers.JVMMetricsProvider;
 public class ExampleActiveAgent {
 	public static void main(String[] args) throws Exception {
 		if(args.length < 3) {
-			System.out.println("Usage: exampleActiveAgent <hostName> <serverAddress> <serverPort>");	
+			System.out.println("Usage: ExampleActiveAgent <hostName> <serverAddress> <serverPort>");	
 			return;
 		}
 		

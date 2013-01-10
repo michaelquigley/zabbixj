@@ -18,7 +18,7 @@
  * Boston, MA  02110-1301, USA.
  */
 
-package com.quigley.zabbixj.example;
+package com.quigley.zabbixj.examples;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import com.quigley.zabbixj.client.PassiveAgentClient;
 public class ExamplePassiveAgentClient {
 	public static void main(String[] args) throws Exception {
 		if(args.length < 3) {
-			System.out.println("Usage: examplePassiveAgentClient <address> <port> [-d<sec>] <key> ... <keyN>");
+			System.out.println("Usage: ExamplePassiveAgentClient <address> <port> [-d<sec>] <key> ... <keyN>");
 			System.exit(1);
 		}
 		
