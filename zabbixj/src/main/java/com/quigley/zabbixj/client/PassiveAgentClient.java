@@ -42,31 +42,38 @@ public class PassiveAgentClient {
 		try {
 			Map<String, Object> values = new HashMap<String, Object>();
 			for(String key : keys) {
+				System.out.println("Key: " + key);
+				
 				Socket socket = new Socket(agentAddress, port);
 				BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				OutputStream output = socket.getOutputStream();
 				
 				byte[] bytes = (key + "\n").getBytes();
 				output.write(bytes);
+				output.flush();
 				String inputLine = input.readLine();
 				socket.close();
 
-				if(inputLine.length() >= 4 && inputLine.substring(0, 4).equals("ZBXD")) {
-					inputLine = inputLine.substring(13, inputLine.length());
-				}
-				
-				try {
-					long inputLong = Long.parseLong(inputLine);
-					values.put(key, inputLong);
-					
-				} catch(Exception e) {
-					try {
-						float inputFloat = Float.parseFloat(inputLine);
-						values.put(key, inputFloat);
-						
-					} catch(Exception e2) {
-						values.put(key, inputLine);
+				if(inputLine != null) {
+					if(inputLine.length() >= 4 && inputLine.substring(0, 4).equals("ZBXD")) {
+						inputLine = inputLine.substring(13, inputLine.length());
 					}
+					
+					try {
+						long inputLong = Long.parseLong(inputLine);
+						values.put(key, inputLong);
+						
+					} catch(Exception e) {
+						try {
+							float inputFloat = Float.parseFloat(inputLine);
+							values.put(key, inputFloat);
+							
+						} catch(Exception e2) {
+							values.put(key, inputLine);
+						}
+					}
+				} else {
+					System.out.println("Empty input line.");
 				}
 			}
 			
