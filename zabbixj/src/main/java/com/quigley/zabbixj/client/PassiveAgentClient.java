@@ -42,8 +42,6 @@ public class PassiveAgentClient {
 		try {
 			Map<String, Object> values = new HashMap<String, Object>();
 			for(String key : keys) {
-				System.out.println("Key: " + key);
-				
 				Socket socket = new Socket(agentAddress, port);
 				BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				OutputStream output = socket.getOutputStream();
