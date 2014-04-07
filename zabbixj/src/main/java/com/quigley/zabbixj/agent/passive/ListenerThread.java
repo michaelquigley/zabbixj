@@ -90,18 +90,19 @@ public class ListenerThread extends Thread {
 
             } catch(Exception e) {
                 if(log.isErrorEnabled()) {
-                    log.error("Error Accepting: " + e.toString());
+                    log.error("Error Accepting: " + e.toString(), e);
                 }
             }
         }
 
-        try {
-                serverSocket.close();
-        } catch (IOException e) {
-                if(log.isErrorEnabled()) {
-                        log.error("Error closing the server socket: " + e.toString());
-                }
-        }
+		try {
+			serverSocket.close();
+			
+		} catch (IOException e) {
+			if(log.isErrorEnabled()) {
+				log.error("Error closing the server socket: " + e.toString(), e);
+			}
+		}
     }
 
     /**
