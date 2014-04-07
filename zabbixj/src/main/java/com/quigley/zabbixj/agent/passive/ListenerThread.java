@@ -26,6 +26,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.InetAddress;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +93,14 @@ public class ListenerThread extends Thread {
                     log.error("Error Accepting: " + e.toString());
                 }
             }
+        }
+
+        try {
+                serverSocket.close();
+        } catch (IOException e) {
+                if(log.isErrorEnabled()) {
+                        log.error("Error closing the server socket: " + e.toString());
+                }
         }
     }
 
