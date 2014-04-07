@@ -12,7 +12,7 @@
 	<packaging>pom</packaging>
 
 	<name>Zabbix/J Parent</name>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 
 	<modules>
 		<module>zabbixj</module>
