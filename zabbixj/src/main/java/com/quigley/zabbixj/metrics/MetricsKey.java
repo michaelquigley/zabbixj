@@ -79,7 +79,9 @@ public class MetricsKey {
 
 	private void parseKey(String keyData) throws MetricsException {
 		try {
-			int firstSepIdx = keyData.indexOf(KEY_SEPARATOR);
+			// search from the last dot from the end of the string or the start of the parameter list 
+			int searchBackwardFrom = (keyData.indexOf(PARAMS_START) == -1) ? keyData.length() : keyData.indexOf(PARAMS_START);
+  		        int firstSepIdx = keyData.lastIndexOf(KEY_SEPARATOR, searchBackwardFrom);
 			if(firstSepIdx > 0) {
 				provider = keyData.substring(0, firstSepIdx);					
 	
