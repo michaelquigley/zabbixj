@@ -20,8 +20,6 @@
 
 package com.quigley.zabbixj.metrics;
 
-import java.util.StringTokenizer;
-
 /**
  * <p>An internal class for representing the components for metric key. This 
  * class is used to convert from raw String representations of parameters to a 
@@ -33,7 +31,8 @@ import java.util.StringTokenizer;
  * 
  * <code>&lt;provider&gt;.&lt;provider_key&gt;[&lt;param1&gt;,...]</code>
  * 
- * @author Michael Quigley 
+ * @author Michael Quigley
+ * @author Mark van Holsteijn
  */
 public class MetricsKey {
 
@@ -62,6 +61,49 @@ public class MetricsKey {
 		return parameters;
 	}
 
+	private void parseKey(String keyData) throws MetricsException {
+		try {
+			// search from the last dot from the end of the string or the start of the parameter list 
+            int searchBackwardFrom = (keyData.indexOf(PARAMS_START) == -1) ? keyData.length() : keyData.indexOf(PARAMS_START);
+            int firstSepIdx = keyData.lastIndexOf(KEY_SEPARATOR, searchBackwardFrom);
+
+			if(firstSepIdx > 0) {
+				provider = keyData.substring(0, firstSepIdx);					
+	
+				String localStr = keyData.substring(firstSepIdx + 1, keyData.length());
+				int startParamsIdx = localStr.indexOf(PARAMS_START) + 1;
+				int endParamsIdx = localStr.lastIndexOf(PARAMS_END);
+	
+				if(startParamsIdx != -1 && endParamsIdx != -1) {
+					key = localStr.substring(0, localStr.indexOf(PARAMS_START));
+	
+					String paramsStr = localStr.substring(startParamsIdx, endParamsIdx);
+                    String[] paramTokens = paramsStr.split("" + PARAMS_SEPARATOR);
+					parameters = new String[paramTokens.length];
+                    for(int i = 0; i < paramTokens.length; i++) {
+                        String paramToken = paramTokens[i];
+                        if(paramToken.indexOf('"') != -1) {
+                            paramToken = paramToken.substring(paramToken.indexOf('"') + 1);
+                        }
+                        if(paramToken.lastIndexOf('"') != -1) {
+                            paramToken = paramToken.substring(0, paramToken.lastIndexOf('"'));
+                        }
+						parameters[i] = paramToken;
+					}
+
+				} else {
+					key = localStr;	
+				}
+				 											
+			} else {
+                throw new MetricsException("Key string does not contain separator.");
+			}
+
+		} catch(Exception e) {
+            throw new MetricsException("Parse error.", e);
+		}
+	}
+
     public String toString() {
         StringBuilder out = new StringBuilder();
         out.append("MetricsKey:(");
@@ -74,49 +116,8 @@ public class MetricsKey {
         }
         out.append(")");
 
-		return out.toString();
-	}
-
-	private void parseKey(String keyData) throws MetricsException {
-		try {
-			// search from the last dot from the end of the string or the start of the parameter list 
-			int searchBackwardFrom = (keyData.indexOf(PARAMS_START) == -1) ? keyData.length() : keyData.indexOf(PARAMS_START);
-  		        int firstSepIdx = keyData.lastIndexOf(KEY_SEPARATOR, searchBackwardFrom);
-			if(firstSepIdx > 0) {
-				provider = keyData.substring(0, firstSepIdx);					
-	
-				String localStr = keyData.substring(firstSepIdx + 1, keyData.length());
-				int startParamsIdx = localStr.indexOf(PARAMS_START) + 1;
-				int endParamsIdx = localStr.lastIndexOf(PARAMS_END);
-	
-				if(startParamsIdx != -1 && endParamsIdx != -1) {
-					key = localStr.substring(0, localStr.indexOf(PARAMS_START));
-	
-					String paramsStr = localStr.substring(startParamsIdx, endParamsIdx);
-					StringTokenizer paramsStrTokens = new StringTokenizer(paramsStr, "" + PARAMS_SEPARATOR);
-					parameters = new String[paramsStrTokens.countTokens()];
-					int i = 0;
-					while(paramsStrTokens.hasMoreTokens()) {
-						parameters[i++] = paramsStrTokens.nextToken();
-					}				 	
-				} else {
-					key = localStr;	
-				}
-				 											
-			} else {
-				String msg = "Key string does not contain separator character!";
-				throw new MetricsException(msg);	
-			}
-		} catch(Exception e) {
-			String msg = "Parse Error: " + e.toString();
-			throw new MetricsException(msg, e);	
-		}																						
-	}
-
-	public static void main(String[] args) throws Exception {
-		MetricsKey mk = new MetricsKey(args[0]);
-		System.out.println(mk.toString());	
-	}
+        return out.toString();
+    }
 
 	private String provider;
 	private String key;
