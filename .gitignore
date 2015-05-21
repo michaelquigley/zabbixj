@@ -2,6 +2,7 @@ build
 .gradle
 .classpath
 .project
+.idea
 *.iml
 *.ipr
 *.iws
