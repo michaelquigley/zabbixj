@@ -1,3 +1,15 @@
+buildscript {
+	repositories {
+		jcenter()
+	}
+	dependencies {
+		classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+	}
+}
+
+apply plugin:'com.github.johnrengelman.shadow'
+
 dependencies {
 	compile project(':zabbixj')
+	compile 'ch.qos.logback:logback-classic:1.1.3'
 }
