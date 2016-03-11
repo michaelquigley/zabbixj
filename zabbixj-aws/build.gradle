@@ -1,0 +1,60 @@
+buildscript {
+    repositories() {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+    }
+}
+
+plugins {
+    id 'maven'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+dependencies {
+    compile project(':zabbixj')
+	compile 'com.amazonaws:aws-java-sdk-cloudwatchmetrics:1.10.59'
+}
+
+task bundlePom << {
+    pom {
+        project {
+            name 'Zabbix/J'
+            description 'Zabbix/J is a framework for integrating Zabbix metrics support into Java applications.'
+            url 'http://quigley.com/'
+            licenses {
+                license {
+                    name 'Apache License Version 2.0'
+                    url 'http://www.apache.org/licenses/'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                connection 'scm:git:https://github.com/michaelquigley/zabbixj.git'
+                url 'https://github.com/michaelquigley/zabbixj.git'
+            }
+            developers {
+                developer {
+                    name 'Michael Quigley'
+                    email 'michael@quigley.com'
+                }
+            }
+        }
+    }.writeTo('build/libs/zabbixj-aws-' + version + '.pom')
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}

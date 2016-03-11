@@ -1,1 +1,1 @@
-include "zabbixj", "zabbixj-examples"
+include "zabbixj", "zabbixj-aws", "zabbixj-examples"
