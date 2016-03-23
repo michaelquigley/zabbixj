@@ -11,5 +11,6 @@ apply plugin:'com.github.johnrengelman.shadow'
 
 dependencies {
 	compile project(':zabbixj')
+	compile project(':zabbixj-sender')
 	compile 'ch.qos.logback:logback-classic:1.1.3'
 }
