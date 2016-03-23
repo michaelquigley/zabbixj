@@ -1,4 +1,4 @@
-package com.quigley.zabbixj.aws;
+package com.quigley.zabbixj.aws.config;
 
 import java.util.List;
 

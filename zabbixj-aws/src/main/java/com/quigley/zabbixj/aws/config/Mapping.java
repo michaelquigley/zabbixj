@@ -1,4 +1,4 @@
-package com.quigley.zabbixj.aws;
+package com.quigley.zabbixj.aws.config;
 
 public class Mapping {
 	public int getPeriodMinutes() {
@@ -8,21 +8,21 @@ public class Mapping {
 		this.periodMinutes = periodMinutes;
 	}
 
-	public SourceItem getSource() {
+	public Source getSource() {
 		return source;
 	}
-	public void setSource(SourceItem source) {
+	public void setSource(Source source) {
 		this.source = source;
 	}
 
-	public DestinationItem getDestination() {
+	public Destination getDestination() {
 		return destination;
 	}
-	public void setDestination(DestinationItem destination) {
+	public void setDestination(Destination destination) {
 		this.destination = destination;
 	}
 
 	private int periodMinutes;
-	private SourceItem source;
-	private DestinationItem destination;
+	private Source source;
+	private Destination destination;
 }

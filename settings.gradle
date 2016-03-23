@@ -1,4 +1,4 @@
-include "zabbixj",
-	"zabbixj-aws",
-	"zabbixj-sender",
-	"zabbixj-examples"
+include "zabbixj-aws",
+	"zabbixj-core",
+	"zabbixj-examples",
+	"zabbixj-sender"

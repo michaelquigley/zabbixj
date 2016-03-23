@@ -1,6 +1,6 @@
-package com.quigley.zabbixj.aws;
+package com.quigley.zabbixj.aws.config;
 
-public class DestinationItem {
+public class Destination {
 	public String getHost() {
 		return host;
 	}

@@ -10,6 +10,8 @@ import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quigley.filesystem.FilesystemPath;
+import com.quigley.zabbixj.aws.config.Configuration;
+import com.quigley.zabbixj.aws.config.Mapping;
 import com.quigley.zabbixj.sender.ZabbixSender;
 import com.quigley.zabbixj.sender.ZabbixSenderDataItem;
 import com.quigley.zabbixj.sender.ZabbixSenderRequest;
@@ -101,7 +103,7 @@ public class CloudWatchBridge {
 				}
 			}
 
-			Thread.sleep(15000);
+			Thread.sleep(1000L);
 		}
 	}
 

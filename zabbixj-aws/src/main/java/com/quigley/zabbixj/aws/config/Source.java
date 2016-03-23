@@ -1,6 +1,6 @@
-package com.quigley.zabbixj.aws;
+package com.quigley.zabbixj.aws.config;
 
-public class SourceItem {
+public class Source {
 	public String getNamespace() {
 		return namespace;
 	}
