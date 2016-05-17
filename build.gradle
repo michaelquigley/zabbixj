@@ -13,6 +13,6 @@ subprojects {
         testCompile 'junit:junit:4.12'
 	}
 
-	version = '4'
+	version = '5'
 	group = 'com.quigley'
 }
