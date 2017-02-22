@@ -9,7 +9,7 @@ You can include Zabbix/J into your Maven-based Java projects with the following 
     <dependency>
     	<groupId>com.quigley</groupId>
     	<artifactId>zabbixj</artifactId>
-    	<version>1.0.1</version>
+    	<version>3</version>
     </dependency>
 
 ## Using Zabbix/J
