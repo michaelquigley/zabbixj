@@ -57,6 +57,7 @@ public class ZabbixAgent {
     /**
      * Start processing requests. Starts the passive listener (if enabled) and the
      * active agent (if enabled).
+     * @throws Exception when a problem occurs starting the agent.
      */
     public void start() throws Exception {
         if(log.isInfoEnabled()) {

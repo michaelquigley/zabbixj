@@ -1,7 +1,7 @@
 apply plugin: 'maven'
 
 dependencies {
-	compile 'org.json:json:20090211'
+	compile 'org.json:json:20180130'
 }
 
 task bundlePom << {
