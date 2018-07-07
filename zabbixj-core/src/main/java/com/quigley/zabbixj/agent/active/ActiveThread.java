@@ -24,11 +24,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bouncycastle.crypto.tls.BasicTlsPSKIdentity;
+import org.bouncycastle.crypto.tls.PSKTlsClient;
+import org.bouncycastle.crypto.tls.TlsClientProtocol;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +43,7 @@ import com.quigley.zabbixj.ZabbixException;
 import com.quigley.zabbixj.metrics.MetricsContainer;
 
 public class ActiveThread extends Thread {
-	public ActiveThread(MetricsContainer metricsContainer, String hostName, InetAddress serverAddress, int serverPort, int refreshInterval) {
+	public ActiveThread(MetricsContainer metricsContainer, String hostName, InetAddress serverAddress, int serverPort, int refreshInterval, String pskIdentity, String psk) {
 		running = true;
 		checks = new HashMap<Integer, List<String>>();
 		lastChecked = new HashMap<Integer, Long>();
@@ -49,6 +53,8 @@ public class ActiveThread extends Thread {
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 		this.refreshInterval = refreshInterval;
+        this.pskIdentity = pskIdentity;
+		this.psk = psk;
 	}
 	
 	public void run() {
@@ -108,11 +114,25 @@ public class ActiveThread extends Thread {
 		if(log.isDebugEnabled()) {
 			log.debug("Requesting a list of active checks from the server.");
 		}
-		
+
 		Socket socket = new Socket(serverAddress, serverPort);
-		InputStream input = socket.getInputStream();
-		OutputStream output = socket.getOutputStream();
-	
+        InputStream input;
+        OutputStream output;
+        TlsClientProtocol protocol = null;
+
+        if (pskIdentity != null && psk != null) {
+            BasicTlsPSKIdentity basicIdentity = new BasicTlsPSKIdentity(pskIdentity.getBytes(), psk.getBytes());
+            PSKTlsClient tlsClient = new PSKTlsClient(basicIdentity);
+            SecureRandom secureRandom = new SecureRandom();
+            protocol = new TlsClientProtocol(socket.getInputStream(), socket.getOutputStream(), secureRandom);
+            protocol.connect(tlsClient);
+            input = protocol.getInputStream();
+            output = protocol.getOutputStream();
+        } else {
+            input = socket.getInputStream();
+            output = socket.getOutputStream();
+        }
+
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
 		JSONObject request = new JSONObject();
@@ -129,7 +149,10 @@ public class ActiveThread extends Thread {
 		while((read = input.read(buffer, 0, 10240)) != -1) {
 			baos.write(buffer, 0, read);
 		}
-		
+
+		if (protocol != null ) {
+		    protocol.close();
+        }
 		socket.close();
 		
 		JSONObject response = getResponse(baos.toByteArray());
@@ -271,9 +294,23 @@ public class ActiveThread extends Thread {
 		metrics.put("clock", "" + clock);
 		
 		Socket socket = new Socket(serverAddress, serverPort);
-		InputStream input = socket.getInputStream();
-		OutputStream output = socket.getOutputStream();
-		
+		InputStream input;
+		OutputStream output;
+        TlsClientProtocol protocol = null;
+
+        if (pskIdentity != null && psk != null) {
+            BasicTlsPSKIdentity basicIdentity = new BasicTlsPSKIdentity(pskIdentity.getBytes(), psk.getBytes());
+            PSKTlsClient tlsClient = new PSKTlsClient(basicIdentity);
+            SecureRandom secureRandom = new SecureRandom();
+            protocol = new TlsClientProtocol(socket.getInputStream(), socket.getOutputStream(), secureRandom);
+            protocol.connect(tlsClient);
+            input = protocol.getInputStream();
+            output = protocol.getOutputStream();
+        } else {
+            input = socket.getInputStream();
+            output = socket.getOutputStream();
+        }
+
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
 		output.write(getRequest(metrics));
@@ -284,7 +321,10 @@ public class ActiveThread extends Thread {
 		while((read = input.read(buffer, 0, 10240)) != -1) {
 			baos.write(buffer, 0, read);
 		}
-		
+
+        if (protocol != null ) {
+            protocol.close();
+        }
 		socket.close();
 		
 		JSONObject response = getResponse(baos.toByteArray());
@@ -370,7 +410,9 @@ public class ActiveThread extends Thread {
 	private InetAddress serverAddress;
 	private int serverPort;
 	private int refreshInterval;
-	
+	private String pskIdentity;
+    private String psk;
+
 	private class ActiveChecksResponseIndex {
 		public ActiveChecksResponseIndex() {
 			index = new HashMap<String, Integer>();

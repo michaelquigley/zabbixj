@@ -2,6 +2,7 @@ apply plugin: 'maven'
 
 dependencies {
 	compile 'org.json:json:20090211'
+	compile 'org.bouncycastle:bcprov-jdk15on:1.60'
 }
 
 task bundlePom << {
