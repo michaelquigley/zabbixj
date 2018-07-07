@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * ZabbixAgent is the central class of the Zabbix/J implementation. It provides
  * all of the necessary components for exposing metrics from within a Java
  * virtual machine.
- * 
+ *
  * @author Michael Quigley
  */
 public class ZabbixAgent {
@@ -43,17 +43,19 @@ public class ZabbixAgent {
      */
     public ZabbixAgent() throws Exception {
         metricsContainer = new MetricsContainer();
-        
+
         enablePassive = true;
         listenPort = 10050;
         listenAddress = null;
-        
+
         enableActive = false;
         serverAddress = null;
         serverPort = 10051;
         refreshInterval = 120;
+        pskIdentity = null;
+        psk = null;
     }
-    
+
     /**
      * Start processing requests. Starts the passive listener (if enabled) and the
      * active agent (if enabled).
@@ -68,14 +70,14 @@ public class ZabbixAgent {
         	if(log.isInfoEnabled()) {
         		log.info("Starting passive listener.");
         	}
-        	
+
 	        if(listenAddress == null) {
 	            listenerThread = new ListenerThread(metricsContainer, listenPort);
 	        } else {
 	            listenerThread = new ListenerThread(metricsContainer, listenAddress, listenPort);
 	        }
 	        listenerThread.start();
-	        
+
 	        if(log.isInfoEnabled()) {
 	        	log.info("Passive listener started.");
 	        }
@@ -85,15 +87,15 @@ public class ZabbixAgent {
         	if(log.isInfoEnabled()) {
         		log.info("Starting active agent.");
         	}
-        	
-        	activeThread = new ActiveThread(metricsContainer, hostName, serverAddress, serverPort, refreshInterval);
+
+        	activeThread = new ActiveThread(metricsContainer, hostName, serverAddress, serverPort, refreshInterval, pskIdentity, psk);
         	activeThread.start();
-        	
+
         	if(log.isInfoEnabled()) {
         		log.info("Active agent started.");
         	}
         }
-        
+
         if(log.isInfoEnabled()) {
             log.info("Zabbix agent started.");
         }
@@ -112,33 +114,33 @@ public class ZabbixAgent {
         	if(log.isInfoEnabled()) {
         		log.info("Stopping passive listener.");
         	}
-        	
+
 	        listenerThread.shutdown();
 	        try {
 	            listenerThread.join();
-	
+
 	        } catch(InterruptedException ie) {
 	            //
 	        }
-	        
+
 	        if(log.isInfoEnabled()) {
 	        	log.info("Passive listener stopped.");
 	        }
         }
-        
+
         if(enableActive) {
         	if(log.isInfoEnabled()) {
         		log.info("Stopping active agent.");
         	}
-        	
+
         	activeThread.shutdown();
         	try {
         		activeThread.join();
-        		
+
         	} catch(InterruptedException ie) {
         		//
         	}
-        	
+
         	if(log.isInfoEnabled()) {
         		log.info("Active agent stopped.");
         	}
@@ -161,7 +163,7 @@ public class ZabbixAgent {
      * Set the value of property <code>enablePassive</code>.
      * @param enablePassive Set to <code>true</code> if the agent should start a listener
      * 		  for passive checks. Set to <code>false</code> if the agent should omit the
-     * 		  passive listener. 
+     * 		  passive listener.
      */
 	public void setEnablePassive(boolean enablePassive) {
 		this.enablePassive = enablePassive;
@@ -203,7 +205,7 @@ public class ZabbixAgent {
     public void setListenPort(int listenPort) {
         this.listenPort = listenPort;
     }
-    
+
     /**
      * Return the value of property <code>enableActive</code>.
      * @return the current value of <code>enableActive</code>. Defaults to <code>false</code>.
@@ -211,7 +213,7 @@ public class ZabbixAgent {
     public boolean isEnableActive() {
 		return enableActive;
 	}
-    
+
     /**
      * Set the value of property <code>enableActive</code>.
      * @param enableActive Set to <code>true</code> when an active check configuration is
@@ -244,7 +246,7 @@ public class ZabbixAgent {
 	public InetAddress getServerAddress() {
 		return serverAddress;
 	}
-	
+
 	/**
 	 * Set the value of property <code>serverAddress</code>.
 	 * @param serverAddress the IP address for the Zabbix server listening for active checks.
@@ -260,7 +262,7 @@ public class ZabbixAgent {
 	public int getServerPort() {
 		return serverPort;
 	}
-	
+
 	/**
 	 * Set the value of property <code>serverPort</code>.
 	 * @param serverPort the TCP port for the Zabbix server listening for active checks. Defaults to
@@ -269,7 +271,7 @@ public class ZabbixAgent {
 	public void setServerPort(int serverPort) {
 		this.serverPort = serverPort;
 	}
-	
+
 	/**
 	 * Return the value of property <code>refreshInterval</code>.
 	 * @return the current value of the <code>refreshInterval</code> property. Defaults to <code>120</code>.
@@ -282,6 +284,28 @@ public class ZabbixAgent {
 	}
 
 	/**
+	 * Return the value of property <code>pskIdentity</code>.
+	 * @return the current value of the <code>pskIdentity</code> property. Defaults to <code>null</code>.
+	 */
+	public String getPskIdentity() {
+		return pskIdentity;
+	}
+	public void setPskIdentity(String psk) {
+		this.psk = pskIdentity;
+	}
+
+	/**
+	 * Return the value of property <code>psk</code>.
+	 * @return the current value of the <code>psk</code> property. Defaults to <code>null</code>.
+	 */
+	public String getPsk() {
+		return psk;
+	}
+	public void setPsk(String psk) {
+		this.psk = psk;
+	}
+
+	/**
      * Add a MetricsProvider to the agent.
      * @param name bind the provider to this name.
      * @param provider the provider instance.
@@ -289,20 +313,22 @@ public class ZabbixAgent {
     public void addProvider(String name, MetricsProvider provider) {
         metricsContainer.addProvider(name, provider);
     }
-    
+
     public void setProviders(Map<String, MetricsProvider> providers) {
     	metricsContainer.addProviders(providers);
     }
-    
+
     private boolean enablePassive;
     private InetAddress listenAddress;
     private int listenPort;
-    
+
     private boolean enableActive;
     private String hostName;
     private InetAddress serverAddress;
     private int serverPort;
     private int refreshInterval;
+    private String pskIdentity;
+    private String psk;
 
     private MetricsContainer metricsContainer;
     private ListenerThread listenerThread;
