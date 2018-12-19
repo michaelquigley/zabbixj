@@ -43,7 +43,7 @@ import com.quigley.zabbixj.ZabbixException;
 import com.quigley.zabbixj.metrics.MetricsContainer;
 
 public class ActiveThread extends Thread {
-	public ActiveThread(MetricsContainer metricsContainer, String hostName, InetAddress serverAddress, int serverPort, int refreshInterval, String pskIdentity, String psk) {
+	public ActiveThread(MetricsContainer metricsContainer, String hostName, String serverAddress, int serverPort, int refreshInterval, String pskIdentity, String psk) {
 		running = true;
 		checks = new HashMap<Integer, List<String>>();
 		lastChecked = new HashMap<Integer, Long>();
@@ -407,7 +407,7 @@ public class ActiveThread extends Thread {
 	
 	private MetricsContainer metricsContainer;
 	private String hostName;
-	private InetAddress serverAddress;
+	private String serverAddress;
 	private int serverPort;
 	private int refreshInterval;
 	private String pskIdentity;

@@ -15,8 +15,6 @@
  */
 package com.quigley.zabbixj.examples;
 
-import java.net.InetAddress;
-
 import com.quigley.zabbixj.agent.ZabbixAgent;
 import com.quigley.zabbixj.providers.JVMMetricsProvider;
 
@@ -40,7 +38,7 @@ public class ExampleActiveAgent {
 		agent.setEnableActive(true);
 		agent.setEnablePassive(false);
 		agent.setHostName(hostName);
-		agent.setServerAddress(InetAddress.getByName(serverAddress));
+		agent.setServerAddress(serverAddress);
 		agent.setServerPort(serverPort);
 		
         agent.addProvider("example", new ExampleMetricsProvider());

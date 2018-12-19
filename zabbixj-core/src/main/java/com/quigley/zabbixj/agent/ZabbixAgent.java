@@ -85,14 +85,16 @@ public class ZabbixAgent {
 
         if(enableActive) {
         	if(log.isInfoEnabled()) {
-        		log.info("Starting active agent.");
+        		log.info("Starting active agent with {}", serverAddress);
         	}
+
+        	InetAddress addr = InetAddress.getByName(serverAddress); // make sure it can be resolved
 
         	activeThread = new ActiveThread(metricsContainer, hostName, serverAddress, serverPort, refreshInterval, pskIdentity, psk);
         	activeThread.start();
 
         	if(log.isInfoEnabled()) {
-        		log.info("Active agent started.");
+        		log.info("Active agent started with {}", addr);
         	}
         }
 
@@ -243,7 +245,7 @@ public class ZabbixAgent {
 	 * Return the value of property <code>serverAddress</code>.
 	 * @return the current value of <code>serverAddress</code>.
 	 */
-	public InetAddress getServerAddress() {
+	public String getServerAddress() {
 		return serverAddress;
 	}
 
@@ -251,7 +253,7 @@ public class ZabbixAgent {
 	 * Set the value of property <code>serverAddress</code>.
 	 * @param serverAddress the IP address for the Zabbix server listening for active checks.
 	 */
-	public void setServerAddress(InetAddress serverAddress) {
+	public void setServerAddress(String serverAddress) {
 		this.serverAddress = serverAddress;
 	}
 
@@ -324,7 +326,7 @@ public class ZabbixAgent {
 
     private boolean enableActive;
     private String hostName;
-    private InetAddress serverAddress;
+    private String serverAddress;
     private int serverPort;
     private int refreshInterval;
     private String pskIdentity;
