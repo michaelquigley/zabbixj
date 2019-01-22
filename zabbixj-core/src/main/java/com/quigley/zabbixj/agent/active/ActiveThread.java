@@ -281,6 +281,10 @@ public class ActiveThread extends Thread {
 			key.put("key", keyName);
 			try {
 				Object value = metricsContainer.getMetric(keyName);
+				if (value == null) {
+					// skip null values, it means not need report ZBX_NOTSUPPORTED to zabbix
+					continue;
+				}
 				key.put("value", value.toString());
 				
 			} catch(Exception e) {

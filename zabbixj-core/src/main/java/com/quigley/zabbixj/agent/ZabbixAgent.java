@@ -42,6 +42,8 @@ public class ZabbixAgent {
      * @throws Exception when a problem occurs creating the agent.
      */
     public ZabbixAgent() throws Exception {
+        failOnNotExistedMetricProvider = true;
+
         metricsContainer = new MetricsContainer();
 
         enablePassive = true;
@@ -308,6 +310,17 @@ public class ZabbixAgent {
 	}
 
 	/**
+	 * Return the value of property <code>failOnNotExistedMetricProvider</code>.
+	 * @return the current value of the <code>failOnNotExistedMetricProvider</code> property. Defaults to <code>true</code>.
+	 */
+	public boolean isFailOnNotExistedMetricProvider() {
+		return failOnNotExistedMetricProvider;
+	}
+	public void setFailOnNotExistedMetricProvider(boolean failOnNotExistedMetricProvider) {
+		this.failOnNotExistedMetricProvider = failOnNotExistedMetricProvider;
+	}
+
+	/**
      * Add a MetricsProvider to the agent.
      * @param name bind the provider to this name.
      * @param provider the provider instance.
@@ -325,6 +338,7 @@ public class ZabbixAgent {
     private int listenPort;
 
     private boolean enableActive;
+    private boolean failOnNotExistedMetricProvider;
     private String hostName;
     private String serverAddress;
     private int serverPort;
