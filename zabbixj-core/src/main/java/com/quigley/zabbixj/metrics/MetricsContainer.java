@@ -25,7 +25,12 @@ import org.slf4j.LoggerFactory;
 
 public class MetricsContainer {
 	public MetricsContainer() {
-		container = new HashMap<String, MetricsProvider>();
+		this(true);
+	}
+
+	public MetricsContainer(boolean failOnNotExistedMetricProvider) {
+		this.container = new HashMap<String, MetricsProvider>();
+		this.failOnNotExistedMetricProvider = failOnNotExistedMetricProvider;
 	}
 
 	/**
@@ -76,8 +81,10 @@ public class MetricsContainer {
 	public MetricsProvider getProvider(String name) throws MetricsException {
 		if(container.containsKey(name)) {
 			return (MetricsProvider) container.get(name);
-		} else {
+		} else if (failOnNotExistedMetricProvider) {
 			throw new MetricsException("No MetricsProvider with name: " + name);
+		} else {
+			return null;
 		}
 	}	
 
@@ -90,10 +97,12 @@ public class MetricsContainer {
 	public Object getMetric(String key) throws MetricsException {
 		MetricsKey mk = new MetricsKey(key);
 		MetricsProvider provider = getProvider(mk.getProvider());
-		return provider.getValue(mk);
+		return provider == null? null : provider.getValue(mk);
 	}
 
 	private Map<String, MetricsProvider> container;
+
+    private boolean failOnNotExistedMetricProvider;
 
     private static Logger log = LoggerFactory.getLogger(MetricsProvider.class);
 }
